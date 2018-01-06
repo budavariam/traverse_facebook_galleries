@@ -14,6 +14,6 @@
 * - save start time in gallery name
 * - make destination dir configurable
 * - test on linux
-* x test building [not worth to investigate errors]
+* x build the app [not worth to investigate errors]
 * + update instructions
 * + rename misleadmig variable names

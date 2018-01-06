@@ -44,6 +44,7 @@ class Files(Enum):
     DATA = "data.json"
     URLS = "urls.txt"
     OPTIONS = "options.json"
+    OPTIONS_TEMPLATE = "options_template.json"
 
 class DownloadWorker(Thread):
     """ Download images on a separate thread """
@@ -236,10 +237,13 @@ class GalleryCrawler(object):
 if __name__ == "__main__":
     print("[Facebook Gallery Downloader v0.2]")
     START = timeit.default_timer()
-    with open(Files.OPTIONS.value) as options_file:
-        OPTIONS = json.load(options_file)
-        CREAWLER = GalleryCrawler(OPTIONS)
-        CREAWLER.run()
+    try:
+        with open(Files.OPTIONS.value) as options_file:
+            OPTIONS = json.load(options_file)
+            CREAWLER = GalleryCrawler(OPTIONS)
+            CREAWLER.run()
+    except FileNotFoundError:
+        print("[ ERROR: You should create your own {} from {}! ]".format(Files.OPTIONS.value, Files.OPTIONS_TEMPLATE.value))
     STOP = timeit.default_timer()
     print("[ Time taken: %ss ]" % str(STOP - START))
     input("Press any key to continue...")

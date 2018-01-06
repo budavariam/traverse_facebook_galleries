@@ -13,6 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
 
 class DownloadWorker(Thread):
     """ Download images on a separate thread """
@@ -96,7 +97,11 @@ class GalleryCrawler(object):
 
     def get_gallery_name(self):
         """ Get the folder name of the gallery and create folder for it"""
-        gallery_name = self.browser.find_element_by_css_selector(".fbPhotoMediaTitleNoFullScreen a")
+        try:
+            gallery_name = self.browser.find_element_by_css_selector(".fbPhotoMediaTitleNoFullScreen a")
+        except NoSuchElementException as exception:
+            print('[ ERROR: ALBUM TITLE CONTAINER NOT FOUND. Please use links that open the gallery!')
+            raise Exception(exception.msg)
         gallery_title = gallery_name.get_attribute('title')
         dir_name = "galleries/{}".format(gallery_title if gallery_title else 'Untitled gallery')
         if not os.path.exists(dir_name):

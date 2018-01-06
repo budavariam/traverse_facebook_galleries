@@ -11,11 +11,11 @@
 * x handle videos
 * + save index into image name
 * + make save index into image name configurable
-* x save start time in gallery name
+* + save start time in gallery name
 * + make destination dir configurable
 * - test on linux
 * x build the app [not worth to investigate errors]
 * + update instructions
 * + rename misleadmig variable names
 * - separate classes to different files
-* - add unique identifiers to gallery names to avoid collision of galleries with the same name.
+* + add unique identifiers to gallery names to avoid collision of galleries with the same name.

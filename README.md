@@ -49,6 +49,7 @@ cookies | The cookies facebook uses to authenticate the users. After login I wri
 force_login | If `true` the login data will be requested, the password will have to be written in secretly. If `false` then the provided cookies will be used to authenticate the requests, but when no cookies are provided, then the user will be forced to sign in.
 save_image_index | If set to `true`, then save images by their appearance order by adding a number before their names.
 destination_dir | The destination directory of the result. Should be empty. The string does not need to contain a slash in the end.
+unique_galleries | If `true`, add timestamp to the start of the gallery folder name. Without this there is no guarantee that two galleries will be saved with different names.
 
 ## Result
 

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import json
 import os
+import time
 import timeit
 from queue import Queue
 from io import BytesIO
@@ -37,6 +38,7 @@ class Opt(Enum):
     USERNAME = "username"
     LOGIN = "force_login"
     BASE_URL = "loginURL"
+    UNIQUE_GALLERIES = "unique_galleries"
 
 class Files(Enum):
     """ Names of the report files in each directory """
@@ -132,13 +134,17 @@ class GalleryCrawler(object):
         try:
             gallery_name = self.browser.find_element_by_css_selector(Selectors.GALLERY_NAME.value)
         except NoSuchElementException as exception:
-            print("[ ERROR: ALBUM TITLE CONTAINER NOT FOUND."
+            print("[ ERROR: GALLERY TITLE CONTAINER NOT FOUND."
                   " Please use links that open the gallery! ]")
             raise Exception(exception.msg)
         gallery_dir = self.options[Opt.DESTINATION.value] or 'galleries'
         gallery_title = gallery_name.get_attribute('title')
-        dir_name = "{}/{}".format(
+        identifier = ""
+        if self.options[Opt.UNIQUE_GALLERIES]:
+            identifier = str(time.time()) + "_"
+        dir_name = "{}/{}{}".format(
             gallery_dir,
+            identifier,
             gallery_title if gallery_title else 'Untitled gallery'
         )
         if not os.path.exists(dir_name):
@@ -181,6 +187,9 @@ class GalleryCrawler(object):
 
     def run(self):
         """ Traverse the full gallery of the image links provided """
+        length = len(self.options[Opt.START_IMAGES.value])
+        if length == 0:
+            print("[ WARNING: You might want to add some images to start from. ]")
         for image_url in self.options[Opt.START_IMAGES.value]:
             queue = Queue()
             self.create_workers(self.options[Opt.MAX_WORKERS.value], queue)

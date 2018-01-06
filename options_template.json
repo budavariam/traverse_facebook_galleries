@@ -6,5 +6,6 @@
     "force_login": false,
     "save_image_index": true,
     "cookies": {},
-    "destination_dir": "galleries"
+    "destination_dir": "galleries",
+    "unique_galleries": true
 }

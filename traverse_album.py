@@ -135,7 +135,7 @@ class GalleryCrawler(object):
         self.browser.quit()
 
 if __name__ == "__main__":
-    print("[Facebook Gallery Downloader v0.1]")
+    print("[Facebook Gallery Downloader v0.2]")
     start = timeit.default_timer()
     with open('options.json') as options_file:    
         OPTIONS = json.load(options_file)

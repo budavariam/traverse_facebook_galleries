@@ -16,4 +16,4 @@
 * - test on linux
 * x test building [not worth to investigate errors]
 * + update instructions
-* - rename misleadmig album variable in options
+* + rename misleadmig variable names

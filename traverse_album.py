@@ -49,10 +49,13 @@ class GalleryCrawler(object):
         """ Authenticate the user """
         if need_auth:
             print("[ Logging In ]")
-            self.browser.get(self.options['baseURL'])
-            #be aware that VSCode can not debug getpass
+            self.browser.get(self.options['loginURL'])
+            username = self.options['username']
+            if not username:
+                username = input("Username: ")
+            #VSCode debug can not pass through getpass
             password = getpass("Password: ")
-            self.browser.find_element_by_id("email").send_keys(self.options['username'])
+            self.browser.find_element_by_id("email").send_keys(username)
             self.browser.find_element_by_id("pass").send_keys(password)
             self.browser.find_element_by_id("loginbutton").click()
             all_cookies = self.browser.get_cookies()
@@ -102,10 +105,10 @@ class GalleryCrawler(object):
 
     def run(self):
         """ Traverse the full gallery of the image links provided """
-        for album_url in self.options['albums']:
+        for image_url in self.options['start_images']:
             queue = Queue()
             self.create_workers(self.options['max_workers'], queue)
-            self.browser.get(album_url)
+            self.browser.get(image_url)
             album_name = self.get_album_name()
             data = {}
             print("[ Open album - {}]".format(album_name))

@@ -6,5 +6,6 @@
     "max_workers": 8,
     "username": "",
     "start_with_login": true,
-    "cookies": {}
+    "cookies": {},
+    "destination_dir": "galleries"
 }

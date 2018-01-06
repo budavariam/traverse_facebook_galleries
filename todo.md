@@ -8,11 +8,11 @@
 * + install instructions, pip freeze, requirements.txt
 * + update to python3
 * + modularize the code, use classes at least
-* - handle videos
+* x handle videos
 * + save index into image name
 * - make save index into image name configurable
 * - save start time in gallery name
-* - make destination dir configurable
+* + make destination dir configurable
 * - test on linux
 * x build the app [not worth to investigate errors]
 * + update instructions

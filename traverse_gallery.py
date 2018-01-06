@@ -102,8 +102,9 @@ class GalleryCrawler(object):
         except NoSuchElementException as exception:
             print('[ ERROR: ALBUM TITLE CONTAINER NOT FOUND. Please use links that open the gallery!')
             raise Exception(exception.msg)
+        gallery_dir = self.options['destination_dir'] or 'galleries'
         gallery_title = gallery_name.get_attribute('title')
-        dir_name = "galleries/{}".format(gallery_title if gallery_title else 'Untitled gallery')
+        dir_name = "{}/{}".format(gallery_dir, gallery_title if gallery_title else 'Untitled gallery')
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
         return dir_name

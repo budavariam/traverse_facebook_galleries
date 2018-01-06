@@ -10,8 +10,8 @@
 * + modularize the code, use classes at least
 * x handle videos
 * + save index into image name
-* - make save index into image name configurable
-* - save start time in gallery name
+* + make save index into image name configurable
+* x save start time in gallery name
 * + make destination dir configurable
 * - test on linux
 * x build the app [not worth to investigate errors]

@@ -33,3 +33,5 @@ Disclaimer: The secretly entered password is only used to pass it to selenium in
 1. Update the `options.json` appropriately
 1. Run `python traverse_gallery.py`
 1. Enter your password in the prompt
+
+After first successful login, you can save the printed cookie value to the options file, set the `force-login` field to false and then you do not have to provide your data again until your tokens are valid.

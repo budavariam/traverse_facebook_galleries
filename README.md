@@ -10,10 +10,11 @@
 
 ## Instructions
 
-1. run `.ve.bat` to init the working directory, 
-
-   * the webdriver must be in path
-   * the virtual environment shall be loaded
+1. the virtual environment shall be loaded like: `virtualenv -p c:\Python36\python.exe .ve`
+1. the requirements should be installed `pip install -r requirements.txt`
+1. run `.ve.bat` to init the working directory:
+   * the webdriver will be in path
+   * the virtualenv will be loaded
 
 ## Introduction
 

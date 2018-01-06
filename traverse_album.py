@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 import json
 import os
-import time
 import timeit
-from Queue import Queue
+from queue import Queue
+from io import BytesIO
 from getpass import getpass
 from threading import Thread
-from StringIO import StringIO
 from PIL import Image
 import requests
 from selenium import webdriver
@@ -25,10 +24,10 @@ class DownloadWorker(Thread):
             (url, file_name, cookies) = self.queue.get()
             r = requests.get(url, cookies=cookies)
             try:
-                i = Image.open(StringIO(r.content))
-                i.save(file_name)
-            except Exception:
-                print "Error saving file from url: " + str(url)
+                i = Image.open(BytesIO(r.content))
+                i.save(str(file_name))
+            except Exception as e:
+                print("Error saving file from url: " + str(url) + str(e))
             self.queue.task_done()
 
 class GalleryCrawler(object):
@@ -48,7 +47,7 @@ class GalleryCrawler(object):
     def auth(self, need_auth):
         """ Authenticate the user """
         if need_auth:
-            print "[ Logging In ]"
+            print("[ Logging In ]")
             self.browser.get(self.options['baseURL'])
             #be aware that VSCode can not debug getpass
             password = getpass("Password: ")
@@ -78,7 +77,7 @@ class GalleryCrawler(object):
     def get_album_name(self):
         """ Get the folder name of the album and create folder for it"""
         album_name = self.browser.find_element_by_css_selector(".fbPhotoMediaTitleNoFullScreen a")
-        dir_name = "galleries/{}".format(album_name.get_attribute('title').encode('utf-8'))
+        dir_name = "galleries/{}".format(album_name.get_attribute('title'))
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
         return dir_name
@@ -86,7 +85,7 @@ class GalleryCrawler(object):
     @staticmethod
     def print_result(album_name, data):
         """ Create summary files """
-        print "[ Generate report - {} ]".format(album_name)
+        print("[ Generate report - {} ]".format(album_name))
         with open(album_name + '/data.json', 'w') as outfile:
             json.dump(data, outfile)
         with open(album_name + '/urls.txt', 'w') as outfile:
@@ -105,7 +104,7 @@ class GalleryCrawler(object):
             self.browser.get(album_url)
             album_name = self.get_album_name()
             data = {}
-            print "[ Open album - {}]".format(album_name)
+            print("[ Open album - {}]".format(album_name))
             while True:
                 self.browser.implicitly_wait(1)
                 post_time = self.browser.find_element_by_css_selector("#fbPhotoSnowliftTimestamp abbr").get_attribute("data-utime")
@@ -130,7 +129,7 @@ class GalleryCrawler(object):
         self.browser.quit()
 
 if __name__ == "__main__":
-    print "[Facebook Gallery Downloader v0.1]"
+    print("[Facebook Gallery Downloader v0.1]")
     start = timeit.default_timer()
     OPTIONS = {
         "baseURL": "http://facebook.com/",
@@ -145,5 +144,5 @@ if __name__ == "__main__":
     crawler = GalleryCrawler(True, OPTIONS)
     crawler.run()
     stop = timeit.default_timer()
-    print "[ Time taken: %ss ]" % str(stop - start)
-    raw_input("Press any key to continue...")
+    print("[ Time taken: %ss ]" % str(stop - start))
+    input("Press any key to continue...")

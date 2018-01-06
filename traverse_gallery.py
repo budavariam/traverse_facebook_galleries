@@ -35,6 +35,12 @@ class GalleryCrawler(object):
     """ Traverse a gallery until it finds an element that it encountered before.
     It assumes that the post timestamps are always available and unique """
 
+    def __init__(self, options):
+        """ Constructor """
+        self.options = options
+        self.browser = self.init_selenium()
+        self.auth(True)
+
     @staticmethod
     def init_selenium():
         """ Initialize the interface """
@@ -64,12 +70,6 @@ class GalleryCrawler(object):
                 cookies[s_cookie["name"]] = s_cookie["value"]
             self.options['cookies'] = cookies
 
-    def __init__(self, need_auth, options):
-        """ Constructor """
-        self.options = options
-        self.browser = self.init_selenium()
-        self.auth(need_auth)
-
     @staticmethod
     def create_workers(max_workers, queue):
         """ Create workers """
@@ -82,7 +82,7 @@ class GalleryCrawler(object):
         """ Get the folder name of the gallery and create folder for it"""
         gallery_name = self.browser.find_element_by_css_selector(".fbPhotoMediaTitleNoFullScreen a")
         gallery_title = gallery_name.get_attribute('title')
-        dir_name = "galleries/{}".format, gallery_title if gallery_title else 'Untitled gallery')
+        dir_name = "galleries/{}".format(gallery_title if gallery_title else 'Untitled gallery')
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
         return dir_name
@@ -151,7 +151,7 @@ if __name__ == "__main__":
     START = timeit.default_timer()
     with open('options.json') as options_file:
         OPTIONS = json.load(options_file)
-        CREAWLER = GalleryCrawler(True, OPTIONS)
+        CREAWLER = GalleryCrawler(OPTIONS)
         CREAWLER.run()
     STOP = timeit.default_timer()
     print("[ Time taken: %ss ]" % str(STOP - START))

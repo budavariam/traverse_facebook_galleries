@@ -1,6 +1,6 @@
 # Facebook Gallery Downloader (Windows only)
 
-It is a scraper that loads an image from facebook, and travls through the gallery until it arrives it has travelled around.
+It is a scraper that loads an image from facebook, and travels through the gallery until it arrives to the same image.
 
 It assumes that:
 
@@ -14,7 +14,7 @@ Disclaimer: The secretly entered password is only used to pass it to selenium in
 ## Dependencies
 
 1. Uses [Python 3.6](https://www.python.org/download/releases/3.6/)
-1. Uses `selenium chromedriver`. Included in the repository, see this [link](https://sites.google.com/a/chromium.org/chromedriver/downloads) for new versions.
+1. Uses `selenium chromedriver`. The windows version is included in the repository, see this [link](https://sites.google.com/a/chromium.org/chromedriver/downloads) for other versions.
     More information [here](https://sites.google.com/a/chromium.org/chromedriver/getting-started)
 1. [Google Chrome](https://www.google.com/chrome/browser/desktop/) must be installed on your computer
 1. pip

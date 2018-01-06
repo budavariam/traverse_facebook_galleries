@@ -17,3 +17,5 @@
 * x build the app [not worth to investigate errors]
 * + update instructions
 * + rename misleadmig variable names
+* - separate classes to different files
+* - add unique identifiers to gallery names to avoid collision of galleries with the same name.

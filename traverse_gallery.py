@@ -160,13 +160,13 @@ class GalleryCrawler(object):
         with open(gallery_name + '/' + Files.URLS.value, 'w') as outfile:
             for _, value in data.items():
                 outfile.write(value['image'] + '\n')
-        with open(gallery_name + '/' + Files.CAPTIONS.value, 'w') as outfile:
+        with open(gallery_name + '/' + Files.CAPTIONS.value, 'wb') as outfile:
             for _, value in data.items():
                 if value['caption']:
                     outfile.write("  {}\n{}\n".format(
                         value['name'],
-                        value['caption'].encode('utf-8')
-                    ))
+                        value['caption']
+                    ).encode('utf-8'))
 
     def get_image_name(self, image, index):
         """ Create the image filename """

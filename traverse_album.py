@@ -1,11 +1,13 @@
+# -*- coding: utf-8 -*-
 import os
 import re
 import sys
 import time
 import timeit
 import requests
-from getpass import getpass
+import json
 from PIL import Image
+from getpass import getpass
 from Queue import Queue
 from threading import Thread
 from StringIO import StringIO
@@ -21,18 +23,11 @@ cookies = {}
 baseURL = "http://facebook.com/"
 username = "maty190@gmail.com"
 password = ""
-albumLink = "https://www.facebook.com/photo.php?fbid=817434431647422&set=oa.906376466053172&type=3&theater"
+albumLink = "https://www.facebook.com/szteenekkar/photos/a.957778550978736.1073741830.885740931515832/957778570978734/?type=3&theater"
+#albumLink = "https://www.facebook.com/photo.php?fbid=817434431647422&set=oa.906376466053172&type=3&theater"
 albumName = "test"
 albumUser = ""
 max_workers = 8
-
-def existsElement(driver, classname): 
-    result = None
-    try:
-        driver.find_element_by_class_name(classname)
-    except Exception:
-        return result
-    return result
 
 class DownloadWorker(Thread):
     def __init__(self, queue):
@@ -43,14 +38,17 @@ class DownloadWorker(Thread):
         while True:
             (url, name) = self.queue.get()
             r = requests.get(url,cookies=cookies)
-            i = Image.open(StringIO(r.content))
-            i.save(albumName + "/" + str(name) + '.jpg')
+            try:
+                i = Image.open(StringIO(r.content))
+                i.save(albumName + "/" + str(name))
+            except Exception:
+                print "Error saving file from url: " + str(url)
             self.queue.task_done()
 
 if __name__ == "__main__":
     print os.path.dirname(sys.argv[0])
 
-    print "[Facebook Album Downloader v1.1]"
+    print "[Facebook Gallery Downloader v0.1]"
     start = timeit.default_timer()
 
     extensions = webdriver.ChromeOptions()
@@ -64,10 +62,7 @@ if __name__ == "__main__":
 
     #if privateAlbum is 'y':
     #    username = raw_input("Email: ")
-    password = getpass("Password: ")
-
-    #albumLink = raw_input("Album Link: ")
-
+    password = getpass("Password: ") #be aware that VSCode can not debug it.
     browser = webdriver.Chrome(executable_path="chromedriver", chrome_options=extensions)
     browser.implicitly_wait(7)
 
@@ -105,29 +100,39 @@ if __name__ == "__main__":
     data = {}
     print "link clicked"
     while True:
-        time = browser.find_element_by_css_selector("#fbPhotoSnowliftTimestamp abbr").get_attribute("data-utime")
-        if time in data:
+        browser.implicitly_wait(1)
+        post_time = browser.find_element_by_css_selector("#fbPhotoSnowliftTimestamp abbr").get_attribute("data-utime")
+        if post_time in data:
             break
         image = browser.find_element_by_class_name('spotlight').get_attribute("src")
-        caption = existsElement(browser, 'hasCaption')
-        data[time] = {
-            #'caption': existsElement(browser, 'span.hasCaption'),
+        caption = browser.find_element_by_class_name('fbPhotosPhotoCaption').text
+        image_name = image.split('/')[-1].split('?')[0]
+        data[post_time] = {
             'caption': caption,
-            'time': time,
-            'image': image
+            'time': post_time,
+            'image': image,
+            'name': image_name
         }
-        url = browser.current_url
-        queue.put((image, re.search(r'fbid=(\d+)&', url).group(1)))
-        element = WebDriverWait(browser, 1).until(
+        #print data[time]
+        queue.put((image, image_name))
+        element = WebDriverWait(browser, 3).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "a.next"))
         )
         element.click()
     print data
 
     browser.quit()
-
     queue.join()
 
     stop = timeit.default_timer()
     print "[Time taken: %ss]" % str(stop - start)
+    with open(albumName + '/data.json', 'w') as outfile:
+        json.dump(data, outfile)
+    with open(albumName + '/urls.txt', 'w') as outfile:
+        for key, value in data.items():
+            outfile.write(value['image'] + '\n')
+    with open(albumName + '/captions.txt', 'w') as outfile:
+        for key, value in data.items():
+            if value['caption']:
+                outfile.write("  {}\n{}\n".format(value['name'], value['caption'].encode('utf-8')))
     raw_input("Press any key to continue...")

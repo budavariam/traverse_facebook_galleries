@@ -189,6 +189,7 @@ class GalleryCrawler(object):
             print("[ Open gallery - {}]".format(gallery_name))
             index = 0
             image_name = ''
+            missing_infinite_loop_preventer = set()
             while True:
                 # Get the necessary data
                 post_time_elem = self.browser.find_element_by_css_selector(
@@ -200,7 +201,11 @@ class GalleryCrawler(object):
                 try:
                     image_elem = self.browser.find_element_by_class_name(Selectors.IMAGE.value)
                 except NoSuchElementException:
-                    print('[ Image not found at: {} ]'.format(self.browser.current_url))
+                    url = self.browser.current_url
+                    print('[ Image not found at: {} ]'.format(url))
+                    if url in missing_infinite_loop_preventer:
+                        break
+                    missing_infinite_loop_preventer.add(url)
                     self.click_next(post_time_elem)
                     continue
                 image = image_elem.get_attribute("src")

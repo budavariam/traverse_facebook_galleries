@@ -1,0 +1,10 @@
+{
+    "baseURL": "http://facebook.com/",
+    "albums": [
+        "https://www.facebook.com/szteenekkar/photos/a.957778550978736.1073741830.885740931515832/957778570978734/?type=3&theater",
+        "https://www.facebook.com/photo.php?fbid=817434431647422&set=oa.906376466053172&type=3&theater"
+    ],
+    "max_workers": 8,
+    "username": "maty190@gmail.com",
+    "cookies": {}
+}

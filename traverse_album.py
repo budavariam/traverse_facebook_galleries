@@ -137,18 +137,10 @@ class GalleryCrawler(object):
 if __name__ == "__main__":
     print("[Facebook Gallery Downloader v0.1]")
     start = timeit.default_timer()
-    OPTIONS = {
-        "baseURL": "http://facebook.com/",
-        "albums": [
-            "https://www.facebook.com/szteenekkar/photos/a.957778550978736.1073741830.885740931515832/957778570978734/?type=3&theater",
-            "https://www.facebook.com/photo.php?fbid=817434431647422&set=oa.906376466053172&type=3&theater"
-        ],
-        "max_workers": 8,
-        "username": "maty190@gmail.com",
-        "cookies": {}
-    }
-    crawler = GalleryCrawler(True, OPTIONS)
-    crawler.run()
+    with open('options.json') as options_file:    
+        OPTIONS = json.load(options_file)
+        crawler = GalleryCrawler(True, OPTIONS)
+        crawler.run()
     stop = timeit.default_timer()
     print("[ Time taken: %ss ]" % str(stop - start))
     input("Press any key to continue...")

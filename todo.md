@@ -10,9 +10,10 @@
 * + modularize the code, use classes at least
 * - handle videos
 * + save index into image name
+* - make save index into image name configurable
 * - save start time in gallery name
 * - make destination dir configurable
 * - test on linux
-* - test building
-* - update instructions
+* x test building [not worth to investigate errors]
+* + update instructions
 * - rename misleadmig album variable in options

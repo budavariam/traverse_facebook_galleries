@@ -140,7 +140,7 @@ class GalleryCrawler(object):
         gallery_dir = self.options[Opt.DESTINATION.value] or 'galleries'
         gallery_title = gallery_name.get_attribute('title')
         identifier = ""
-        if self.options[Opt.UNIQUE_GALLERIES]:
+        if self.options[Opt.UNIQUE_GALLERIES.value]:
             identifier = str(time.time()) + "_"
         dir_name = "{}/{}{}".format(
             gallery_dir,

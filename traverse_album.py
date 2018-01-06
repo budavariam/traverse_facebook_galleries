@@ -105,11 +105,13 @@ class GalleryCrawler(object):
             album_name = self.get_album_name()
             data = {}
             print("[ Open album - {}]".format(album_name))
+            index = 0
             while True:
                 self.browser.implicitly_wait(1)
                 post_time = self.browser.find_element_by_css_selector("#fbPhotoSnowliftTimestamp abbr").get_attribute("data-utime")
                 if post_time in data:
                     break
+                index += 1
                 image = self.browser.find_element_by_class_name('spotlight').get_attribute("src")
                 image_name = image.split('/')[-1].split('?')[0]
                 data[post_time] = {
@@ -124,6 +126,7 @@ class GalleryCrawler(object):
                     EC.presence_of_element_located((By.CSS_SELECTOR, "a.next"))
                 )
                 element.click()
+            print('[ {} images found. ]'.format(index))
             queue.join()
             self.print_result(album_name, data)
         self.browser.quit()

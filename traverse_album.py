@@ -15,6 +15,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class DownloadWorker(Thread):
+    """ Download images on a separate thread """
     def __init__(self, queue):
         Thread.__init__(self)
         self.queue = queue
@@ -22,12 +23,12 @@ class DownloadWorker(Thread):
     def run(self):
         while True:
             (url, file_name, cookies) = self.queue.get()
-            r = requests.get(url, cookies=cookies)
+            request = requests.get(url, cookies=cookies)
             try:
-                i = Image.open(BytesIO(r.content))
-                i.save(str(file_name))
-            except Exception as e:
-                print("Error saving file from url: " + str(url) + str(e))
+                image = Image.open(BytesIO(request.content))
+                image.save(str(file_name))
+            except Exception as exception:
+                print("Error saving file from url: " + str(url) + str(exception))
             self.queue.task_done()
 
 class GalleryCrawler(object):
@@ -94,7 +95,10 @@ class GalleryCrawler(object):
         with open(album_name + '/captions.txt', 'w') as outfile:
             for _, value in data.items():
                 if value['caption']:
-                    outfile.write("  {}\n{}\n".format(value['name'], value['caption'].encode('utf-8')))
+                    outfile.write("  {}\n{}\n".format(
+                        value['name'],
+                        value['caption'].encode('utf-8')
+                    ))
 
     def run(self):
         """ Traverse the full gallery of the image links provided """
@@ -107,20 +111,24 @@ class GalleryCrawler(object):
             print("[ Open album - {}]".format(album_name))
             index = 0
             while True:
-                post_time = self.browser.find_element_by_css_selector("#fbPhotoSnowliftTimestamp abbr").get_attribute("data-utime")
+                post_time = self.browser.find_element_by_css_selector(
+                    "#fbPhotoSnowliftTimestamp abbr"
+                ).get_attribute("data-utime")
                 if post_time in data:
                     break
                 index += 1
                 image_elem = self.browser.find_element_by_class_name('spotlight')
                 image = image_elem.get_attribute("src")
-                image_name = image.split('/')[-1].split('?')[0]
+                image_name = "{}_{}".format(index, image.split('/')[-1].split('?')[0])
                 data[post_time] = {
                     'caption': self.browser.find_element_by_class_name('fbPhotosPhotoCaption').text,
                     'time': post_time,
                     'image': image,
                     'name': image_name
                 }
-                queue.put((image, "{}/{}".format(album_name, str(image_name)), self.options['cookies']))
+                queue.put(
+                    (image, "{}/{}".format(album_name, str(image_name)), self.options['cookies'])
+                )
 
                 element = WebDriverWait(self.browser, 3).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, "a.next"))
@@ -136,11 +144,11 @@ class GalleryCrawler(object):
 
 if __name__ == "__main__":
     print("[Facebook Gallery Downloader v0.2]")
-    start = timeit.default_timer()
-    with open('options.json') as options_file:    
+    START = timeit.default_timer()
+    with open('options.json') as options_file:
         OPTIONS = json.load(options_file)
-        crawler = GalleryCrawler(True, OPTIONS)
-        crawler.run()
-    stop = timeit.default_timer()
-    print("[ Time taken: %ss ]" % str(stop - start))
+        CREAWLER = GalleryCrawler(True, OPTIONS)
+        CREAWLER.run()
+    STOP = timeit.default_timer()
+    print("[ Time taken: %ss ]" % str(STOP - START))
     input("Press any key to continue...")

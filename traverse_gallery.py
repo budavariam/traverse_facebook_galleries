@@ -78,24 +78,25 @@ class GalleryCrawler(object):
             worker.daemon = True
             worker.start()
 
-    def get_album_name(self):
-        """ Get the folder name of the album and create folder for it"""
-        album_name = self.browser.find_element_by_css_selector(".fbPhotoMediaTitleNoFullScreen a")
-        dir_name = "galleries/{}".format(album_name.get_attribute('title'))
+    def get_gallery_name(self):
+        """ Get the folder name of the gallery and create folder for it"""
+        gallery_name = self.browser.find_element_by_css_selector(".fbPhotoMediaTitleNoFullScreen a")
+        gallery_title = gallery_name.get_attribute('title')
+        dir_name = "galleries/{}".format, gallery_title if gallery_title else 'Untitled gallery')
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
         return dir_name
 
     @staticmethod
-    def print_result(album_name, data):
+    def print_result(gallery_name, data):
         """ Create summary files """
-        print("[ Generate report - {} ]".format(album_name))
-        with open(album_name + '/data.json', 'w') as outfile:
+        print("[ Generate report - {} ]".format(gallery_name))
+        with open(gallery_name + '/data.json', 'w') as outfile:
             json.dump(data, outfile)
-        with open(album_name + '/urls.txt', 'w') as outfile:
+        with open(gallery_name + '/urls.txt', 'w') as outfile:
             for _, value in data.items():
                 outfile.write(value['image'] + '\n')
-        with open(album_name + '/captions.txt', 'w') as outfile:
+        with open(gallery_name + '/captions.txt', 'w') as outfile:
             for _, value in data.items():
                 if value['caption']:
                     outfile.write("  {}\n{}\n".format(
@@ -109,9 +110,9 @@ class GalleryCrawler(object):
             queue = Queue()
             self.create_workers(self.options['max_workers'], queue)
             self.browser.get(image_url)
-            album_name = self.get_album_name()
+            gallery_name = self.get_gallery_name()
             data = {}
-            print("[ Open album - {}]".format(album_name))
+            print("[ Open gallery - {}]".format(gallery_name))
             index = 0
             while True:
                 post_time = self.browser.find_element_by_css_selector(
@@ -130,7 +131,7 @@ class GalleryCrawler(object):
                     'name': image_name
                 }
                 queue.put(
-                    (image, "{}/{}".format(album_name, str(image_name)), self.options['cookies'])
+                    (image, "{}/{}".format(gallery_name, str(image_name)), self.options['cookies'])
                 )
 
                 element = WebDriverWait(self.browser, 3).until(
@@ -142,7 +143,7 @@ class GalleryCrawler(object):
                 )
             print('[ {} images found. ]'.format(index))
             queue.join()
-            self.print_result(album_name, data)
+            self.print_result(gallery_name, data)
         self.browser.quit()
 
 if __name__ == "__main__":

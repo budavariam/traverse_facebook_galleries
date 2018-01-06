@@ -1,5 +1,16 @@
 # Facebook Gallery Downloader (Windows only)
 
+It is a scraper that loads an image from facebook, and travls through the gallery until it arrives it has travelled around.
+
+It assumes that:
+
+* the image timestamps are different.
+* the user provided link is an opened image, not just a gallery.
+* certain style classes appear in these facebook pages
+* the user provides good login information
+
+Disclaimer: The secretly entered password is only used to pass it to selenium in the login page
+
 ## Dependencies
 
 1. Uses [Python 3.6](https://www.python.org/download/releases/3.6/)
@@ -20,5 +31,5 @@
 ## Usage
 
 1. Update the `options.json` appropriately
-1. Run `python traverse_album.py`
+1. Run `python traverse_gallery.py`
 1. Enter your password in the prompt

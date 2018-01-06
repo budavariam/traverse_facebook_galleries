@@ -1,11 +1,10 @@
 {
     "loginURL": "http://facebook.com/",
-    "start_images": [
-        "https://www.facebook.com/photo.php?fbid=11111111111&set=oa.111111111111&type=3&theater"
-    ],
+    "start_images": [],
     "max_workers": 8,
     "username": "",
-    "start_with_login": true,
+    "force_login": false,
+    "save_image_index": true,
     "cookies": {},
     "destination_dir": "galleries"
 }

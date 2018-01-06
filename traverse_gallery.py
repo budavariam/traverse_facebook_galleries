@@ -126,6 +126,14 @@ class GalleryCrawler(object):
                         value['caption'].encode('utf-8')
                     ))
 
+    def get_image_name(self, image, index):
+        """ Create the image filename """
+        image_name = image.split('/')[-1].split('?')[0]
+        if self.options['save_image_index']:
+            return "{}_{}".format(index, image_name)
+        else:
+            return image_name
+
     def run(self):
         """ Traverse the full gallery of the image links provided """
         for image_url in self.options['start_images']:
@@ -136,21 +144,21 @@ class GalleryCrawler(object):
             data = {}
             print("[ Open gallery - {}]".format(gallery_name))
             index = 0
-            while True:
+            image_name = ''
+            while image_name not in data:
                 post_time = self.browser.find_element_by_css_selector(
                     "#fbPhotoSnowliftTimestamp abbr"
                 ).get_attribute("data-utime")
-                if post_time in data:
-                    break
                 index += 1
                 image_elem = self.browser.find_element_by_class_name('spotlight')
                 image = image_elem.get_attribute("src")
-                image_name = "{}_{}".format(index, image.split('/')[-1].split('?')[0])
-                data[post_time] = {
+                image_name = self.get_image_name(image, index)
+                data[image_name] = {
                     'caption': self.browser.find_element_by_class_name('fbPhotosPhotoCaption').text,
                     'time': post_time,
                     'image': image,
-                    'name': image_name
+                    'name': image_name,
+                    'post_time': post_time
                 }
                 queue.put(
                     (image, "{}/{}".format(gallery_name, str(image_name)), self.options['cookies'])

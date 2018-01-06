@@ -54,6 +54,11 @@ class GalleryCrawler(object):
     def auth(self):
         """ Authenticate the user """
         self.browser.get(self.options['loginURL'])
+        if not self.options['start_with_login'] and not self.options['cookies']:
+            print("[ You chose to start without login,"
+                  " but you haven't provided any cookies,"
+                  " I let you log in. ]")
+            self.options['start_with_login'] = True
         if self.options['start_with_login']:
             print("[ Logging In ]")
             username = self.options['username']
@@ -69,11 +74,15 @@ class GalleryCrawler(object):
             for s_cookie in all_cookies:
                 cookies[s_cookie["name"]] = s_cookie["value"]
             self.options['cookies'] = cookies
-            print("[ Save these cookies to options to precvent login for a while when 'start_with_login' is 'false' ]")
+            print("[ Save these cookies to options to"
+                  " precvent login for a while when"
+                  " 'start_with_login' is 'false' ]")
             print(str(cookies).replace("'", '"'))
             print("[ --- ]")
         else:
-            print("[ I hope you have set the cookie attribute in the options.json, and they are valid now ]")
+            print("[ I hope the cookie attribute"
+                  " in the options.json that you have set are valid now."
+                  " If not remove it in the next run. ]")
             for (name, value) in self.options['cookies'].items():
                 self.browser.add_cookie({'name': name, 'value': value})
 

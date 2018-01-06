@@ -39,7 +39,7 @@ class GalleryCrawler(object):
         """ Constructor """
         self.options = options
         self.browser = self.init_selenium()
-        self.auth(True)
+        self.auth()
 
     @staticmethod
     def init_selenium():
@@ -51,11 +51,11 @@ class GalleryCrawler(object):
         browser.implicitly_wait(7)
         return browser
 
-    def auth(self, need_auth):
+    def auth(self):
         """ Authenticate the user """
-        if need_auth:
+        self.browser.get(self.options['loginURL'])
+        if self.options['start_with_login']:
             print("[ Logging In ]")
-            self.browser.get(self.options['loginURL'])
             username = self.options['username']
             if not username:
                 username = input("Username: ")
@@ -69,6 +69,13 @@ class GalleryCrawler(object):
             for s_cookie in all_cookies:
                 cookies[s_cookie["name"]] = s_cookie["value"]
             self.options['cookies'] = cookies
+            print("[ Save these cookies to options to precvent login for a while when 'start_with_login' is 'false' ]")
+            print(str(cookies).replace("'", '"'))
+            print("[ --- ]")
+        else:
+            print("[ I hope you have set the cookie attribute in the options.json, and they are valid now ]")
+            for (name, value) in self.options['cookies'].items():
+                self.browser.add_cookie({'name': name, 'value': value})
 
     @staticmethod
     def create_workers(max_workers, queue):

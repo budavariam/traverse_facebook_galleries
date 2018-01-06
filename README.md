@@ -1,6 +1,6 @@
 # Facebook Gallery Downloader (Windows only)
 
-It is a scraper that loads an image from facebook, and travels through the gallery until it arrives to the same image.
+It is a scraper that loads an image from facebook, downloads it in full size and travels through the gallery until it arrives to the same image.
 
 It assumes that:
 
@@ -26,6 +26,7 @@ Disclaimer: The secretly entered password is only used to pass it to selenium in
    * the webdriver will be added to the path
    * the virtualenv will be loaded
 1. the requirements should be installed `pip install -r requirements.txt`
+1. create `options.json` file from `options_template.json`. It will be ignored by git.
 1. to leave from the virtualenv type `deactivate`
 
 ## Usage

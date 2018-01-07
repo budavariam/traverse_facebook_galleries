@@ -27,6 +27,7 @@ class Selectors(Enum):
     POST_TIME = "#fbPhotoSnowliftTimestamp abbr"
     CAPTION = "fbPhotosPhotoCaption"
     GALLERY_NAME = ".fbPhotoMediaTitleNoFullScreen a"
+    FULLSCREEN = "fbPhotoSnowliftFullScreenSwitch"
 
 class Opt(Enum):
     """ Option variable names """
@@ -217,6 +218,10 @@ class GalleryCrawler(object):
             index = 0
             image_name = ''
             missing_infinite_loop_preventer = set()
+            fullscreen_element = WebDriverWait(self.browser, 3).until(
+                EC.presence_of_element_located((By.ID, Selectors.FULLSCREEN.value))
+            )
+            fullscreen_element.click()
             while True:
                 # Get the necessary data
                 post_time_elem = self.browser.find_element_by_css_selector(

@@ -1,5 +1,6 @@
 """ Traverse the galleries based on the info that it got from opions. """
 
+import logging
 import os
 import time
 import json
@@ -41,9 +42,10 @@ class GalleryCrawler(object):
         #Redirect to login url is needed for session cookis, because they are available for domain
         self.browser.get(self.options[Opt.BASE_URL.value])
         if not self.options[Opt.LOGIN.value] and not self.options[Opt.COOKIES.value]:
-            print("[ You chose to start without login,"
-                  " but you haven't provided any cookies,"
-                  " I let you log in. ]")
+            logging.warning(
+                "You chose to start without login," \
+                " but you haven't provided any cookies,"\
+                " I let you log in for now.")
             self.options[Opt.LOGIN.value] = True
         if self.options[Opt.LOGIN.value]:
             print("[ Logging In ]")
@@ -61,7 +63,7 @@ class GalleryCrawler(object):
                 cookies[s_cookie["name"]] = s_cookie["value"]
             self.options[Opt.USERNAME.value] = cookies
             print("[ Save these cookies to options to"
-                  " precvent login for a while when"
+                  " prevent login for a while when"
                   " 'start_with_login' is 'false' ]")
             print(str(cookies).replace("'", '"'))
             print("[ --- ]")
@@ -85,8 +87,8 @@ class GalleryCrawler(object):
         try:
             gallery_name = self.browser.find_element_by_css_selector(Selectors.GALLERY_NAME.value)
         except NoSuchElementException:
-            print("[ ERROR: GALLERY TITLE CONTAINER NOT FOUND."
-                  " Please use links that open the gallery! ]")
+            logging.error("GALLERY TITLE CONTAINER NOT FOUND." +
+                          " Please use links that open the gallery! ]")
             raise
         gallery_dir = self.options[Opt.DESTINATION.value] or 'galleries'
         gallery_title = gallery_name.get_attribute('title')
@@ -166,7 +168,7 @@ class GalleryCrawler(object):
                 image_elem = self.browser.find_element_by_class_name(Selectors.IMAGE.value)
             except NoSuchElementException:
                 url = self.browser.current_url
-                print('[ Image not found at: {} ]'.format(url))
+                logging.warning('Image not found at: %s', url)
                 if url in missing_infinite_loop_preventer:
                     break
                 missing_infinite_loop_preventer.add(url)
@@ -202,17 +204,17 @@ class GalleryCrawler(object):
         """ Traverse the full gallery of the image links provided """
         length = len(self.options[Opt.START_IMAGES.value])
         if length == 0:
-            print("[ WARNING: You might want to add some images to start from. ]")
+            logging.warning("You might want to add some images to start from.")
         for image_data in self.options[Opt.START_IMAGES.value]:
             if isinstance(image_data, str):
                 image_url = image_data
             else:
                 image_url = image_data.get(Galleries.URL.value, '')
                 if not image_url:
-                    print("[ WARNING: No url provided for gallery: {} ]".format(image_data))
+                    logging.warning("No url provided for gallery: %s", image_data)
                     continue
                 if image_data.get(Galleries.SKIP.value, False):
-                    print("[ INFO: {} skipped ]".format(image_url))
+                    logging.info("%s skipped", image_url)
                     continue
             try:
                 self.download_gallery(image_url)

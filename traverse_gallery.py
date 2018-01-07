@@ -1,6 +1,7 @@
 """ Image downloader for Facebook """
 # -*- coding: utf-8 -*-
 import json
+import logging
 import timeit
 from lib.files import Files
 from lib.gallery_crawler import GalleryCrawler
@@ -13,10 +14,11 @@ def main():
             creawler = GalleryCrawler(options)
             creawler.run()
     except FileNotFoundError:
-        print("[ ERROR: You should create your own {} from {}! ]".format(
+        logging.error(
+            "You should create your own %s from %s!",
             Files.OPTIONS.value,
             Files.OPTIONS_TEMPLATE.value
-            ))
+        )
 
 if __name__ == "__main__":
     print("[Facebook Gallery Downloader v0.3]")

@@ -1,3 +1,4 @@
 .ve/
 galleries/
 options.json
+*.pyc

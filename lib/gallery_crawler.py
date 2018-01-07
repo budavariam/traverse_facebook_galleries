@@ -146,7 +146,11 @@ class GalleryCrawler(object):
         queue = Queue()
         self.create_workers(self.options[Opt.MAX_WORKERS.value], queue)
         self.browser.get(image_url)
-        gallery_name = self.get_gallery_name()
+        gallery_name = ''
+        try:
+            gallery_name = self.get_gallery_name()
+        except NoSuchElementException:
+            return
         data = {}
         print("[ Open gallery - {}]".format(gallery_name))
         index = 0
@@ -216,8 +220,5 @@ class GalleryCrawler(object):
                 if image_data.get(Galleries.SKIP.value, False):
                     logging.info("%s skipped", image_url)
                     continue
-            try:
-                self.download_gallery(image_url)
-            except NoSuchElementException:
-                continue
+            self.download_gallery(image_url)
         self.browser.quit()

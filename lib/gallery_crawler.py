@@ -84,13 +84,15 @@ class GalleryCrawler(object):
         """ Get the folder name of the gallery and create folder for it"""
         try:
             gallery_name = self.browser.find_element_by_css_selector(Selectors.GALLERY_NAME.value)
-        except NoSuchElementException as exception:
+        except NoSuchElementException:
             print("[ ERROR: GALLERY TITLE CONTAINER NOT FOUND."
                   " Please use links that open the gallery! ]")
-            raise Exception(exception.msg)
+            raise
         gallery_dir = self.options[Opt.DESTINATION.value] or 'galleries'
         gallery_title = gallery_name.get_attribute('title')
-        gallery_title = ''.join(x for x in gallery_title if x.isalpha() or x.isdigit() or x in [" ", "_"])
+        gallery_title = ''.join(
+            x for x in gallery_title if x.isalpha() or x.isdigit() or x in [" ", "_"]
+        )
         identifier = ""
         if self.options[Opt.UNIQUE_GALLERIES.value]:
             identifier = str(time.time()) + "_"
@@ -137,6 +139,65 @@ class GalleryCrawler(object):
             EC.staleness_of(waitforstale)
         )
 
+    def download_gallery(self, image_url):
+        """ Click through a gallery in fullscreen mode """
+        queue = Queue()
+        self.create_workers(self.options[Opt.MAX_WORKERS.value], queue)
+        self.browser.get(image_url)
+        gallery_name = self.get_gallery_name()
+        data = {}
+        print("[ Open gallery - {}]".format(gallery_name))
+        index = 0
+        image_name = ''
+        missing_infinite_loop_preventer = set()
+        fullscreen_element = WebDriverWait(self.browser, 3).until(
+            EC.presence_of_element_located((By.ID, Selectors.FULLSCREEN.value))
+        )
+        fullscreen_element.click()
+        while True:
+            # Get the necessary data
+            post_time_elem = self.browser.find_element_by_css_selector(
+                Selectors.POST_TIME.value
+            )
+            post_time = post_time_elem.get_attribute("data-utime")
+            index += 1
+            image_elem = None
+            try:
+                image_elem = self.browser.find_element_by_class_name(Selectors.IMAGE.value)
+            except NoSuchElementException:
+                url = self.browser.current_url
+                print('[ Image not found at: {} ]'.format(url))
+                if url in missing_infinite_loop_preventer:
+                    break
+                missing_infinite_loop_preventer.add(url)
+                self.click_next(post_time_elem)
+                post_time_elem = None
+                continue
+            image = image_elem.get_attribute("src")
+            image_name = self.get_image_name(image, index)
+            if image in data:
+                break
+            data[image] = {
+                'caption': self.browser.find_element_by_class_name(
+                    Selectors.CAPTION.value
+                ).text,
+                'time': post_time,
+                'image': image,
+                'name': image_name,
+                'post_time': post_time
+            }
+            # Save image file
+            queue.put(
+                (image,
+                 "{}/{}".format(gallery_name, str(image_name)),
+                 self.options[Opt.COOKIES.value]
+                )
+            )
+            self.click_next(image_elem)
+        print('[ {} images found. ]'.format(index))
+        queue.join()
+        self.print_result(gallery_name, data)
+
     def run(self):
         """ Traverse the full gallery of the image links provided """
         length = len(self.options[Opt.START_IMAGES.value])
@@ -153,58 +214,8 @@ class GalleryCrawler(object):
                 if image_data.get(Galleries.SKIP.value, False):
                     print("[ INFO: {} skipped ]".format(image_url))
                     continue
-            queue = Queue()
-            self.create_workers(self.options[Opt.MAX_WORKERS.value], queue)
-            self.browser.get(image_url)
-            gallery_name = self.get_gallery_name()
-            data = {}
-            print("[ Open gallery - {}]".format(gallery_name))
-            index = 0
-            image_name = ''
-            missing_infinite_loop_preventer = set()
-            fullscreen_element = WebDriverWait(self.browser, 3).until(
-                EC.presence_of_element_located((By.ID, Selectors.FULLSCREEN.value))
-            )
-            fullscreen_element.click()
-            while True:
-                # Get the necessary data
-                post_time_elem = self.browser.find_element_by_css_selector(
-                    Selectors.POST_TIME.value
-                )
-                post_time = post_time_elem.get_attribute("data-utime")
-                index += 1
-                image_elem = None
-                try:
-                    image_elem = self.browser.find_element_by_class_name(Selectors.IMAGE.value)
-                except NoSuchElementException:
-                    url = self.browser.current_url
-                    print('[ Image not found at: {} ]'.format(url))
-                    if url in missing_infinite_loop_preventer:
-                        break
-                    missing_infinite_loop_preventer.add(url)
-                    self.click_next(post_time_elem)
-                    continue
-                image = image_elem.get_attribute("src")
-                image_name = self.get_image_name(image, index)
-                if image in data:
-                    break
-                data[image] = {
-                    'caption': self.browser.find_element_by_class_name(
-                        Selectors.CAPTION.value
-                    ).text,
-                    'time': post_time,
-                    'image': image,
-                    'name': image_name,
-                    'post_time': post_time
-                }
-                # Save image file
-                queue.put(
-                    (image, "{}/{}".format(gallery_name, str(image_name)),
-                     self.options[Opt.COOKIES.value]
-                    )
-                )
-                self.click_next(image_elem)
-            print('[ {} images found. ]'.format(index))
-            queue.join()
-            self.print_result(gallery_name, data)
+            try:
+                self.download_gallery(image_url)
+            except NoSuchElementException:
+                continue
         self.browser.quit()

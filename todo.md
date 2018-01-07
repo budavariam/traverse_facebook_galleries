@@ -19,3 +19,5 @@
 * + rename misleadmig variable names
 * - separate classes to different files
 * + add unique identifiers to gallery names to avoid collision of galleries with the same name.
+* - add diferent options to galleries, add names to them for separation afterwards, add custom name, retry count, report settings
+* - add a proper logger with log levels

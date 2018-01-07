@@ -48,6 +48,12 @@ class Files(Enum):
     OPTIONS = "options.json"
     OPTIONS_TEMPLATE = "options_template.json"
 
+class Galleries(Enum):
+    """ Image dict data """
+    URL = "url"
+    COMMENT = "comment"
+    SKIP = "skipped"
+
 class DownloadWorker(Thread):
     """ Download images on a separate thread """
     def __init__(self, queue):
@@ -139,6 +145,7 @@ class GalleryCrawler(object):
             raise Exception(exception.msg)
         gallery_dir = self.options[Opt.DESTINATION.value] or 'galleries'
         gallery_title = gallery_name.get_attribute('title')
+        gallery_title = ''.join(x for x in gallery_title if x.isalpha() or x.isdigit() or x in [" ", "_"])
         identifier = ""
         if self.options[Opt.UNIQUE_GALLERIES.value]:
             identifier = str(time.time()) + "_"
@@ -190,7 +197,17 @@ class GalleryCrawler(object):
         length = len(self.options[Opt.START_IMAGES.value])
         if length == 0:
             print("[ WARNING: You might want to add some images to start from. ]")
-        for image_url in self.options[Opt.START_IMAGES.value]:
+        for image_data in self.options[Opt.START_IMAGES.value]:
+            if isinstance(image_data, str):
+                image_url = image_data
+            else:
+                image_url = image_data.get(Galleries.URL.value, '')
+                if not image_url:
+                    print("[ WARNING: No url provided for gallery: {} ]".format(image_data))
+                    continue
+                if image_data.get(Galleries.SKIP.value, False):
+                    print("[ INFO: {} skipped ]".format(image_url))
+                    continue
             queue = Queue()
             self.create_workers(self.options[Opt.MAX_WORKERS.value], queue)
             self.browser.get(image_url)

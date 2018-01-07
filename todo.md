@@ -1,23 +1,23 @@
 # TODO
 
-* + auth from other file
-* + prompt for auth password
-* + download multiple galleries
-* + save captions in another file after gallery is finished
-* + save galleries to a folder, gitignore that folder
-* + install instructions, pip freeze, requirements.txt
-* + update to python3
-* + modularize the code, use classes at least
-* x handle videos
-* + save index into image name
-* + make save index into image name configurable
-* + save start time in gallery name
-* + make destination dir configurable
-* - test on linux
-* x build the app [not worth to investigate errors]
-* + update instructions
-* + rename misleadmig variable names
-* + separate classes to different files
-* + add unique identifiers to gallery names to avoid collision of galleries with the same name.
-* + add diferent options to galleries, add names to them for separation afterwards, add custom name, retry count, report settings
-* + add a proper logger with log levels
+- [+] auth from other file
+- [+] prompt for auth password
+- [+] download multiple galleries
+- [+] save captions in another file after gallery is finished
+- [+] save galleries to a folder, gitignore that folder
+- [+] install instructions, pip freeze, requirements.txt
+- [+] update to python3
+- [+] modularize the code, use classes at least
+- ~~ handle videos ~~
+- [+] save index into image name
+- [+] make save index into image name configurable
+- [+] save start time in gallery name
+- [+] make destination dir configurable
+- [-] test on linux
+- ~~ build the app [not worth to investigate errors] ~~
+- [+] update instructions
+- [+] rename misleadmig variable names
+- [+] separate classes to different files
+- [+] add unique identifiers to gallery names to avoid collision of galleries with the same name.
+- [+] add diferent options to galleries, add names to them for separation afterwards, add custom name, retry count, report settings
+- [+] add a proper logger with log levels

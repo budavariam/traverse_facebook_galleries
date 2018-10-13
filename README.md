@@ -12,9 +12,9 @@ Disclaimer: The secretly entered password is only used to pass it to selenium in
 
 ## Dependencies
 
-1. Uses [Python 3.6](https://www.python.org/download/releases/3.6/)
-1. Uses `selenium chromedriver`. The windows version is included in the repository, see this [link](https://sites.google.com/a/chromium.org/chromedriver/downloads) for other versions.
-    More information [here](https://sites.google.com/a/chromium.org/chromedriver/getting-started)
+1. Uses [Python 3.7](https://www.python.org/downloads/release/python-370/)
+1. Uses `selenium chromedriver`. The windows version is included in the repository, see this [link](http://chromedriver.chromium.org/downloads) for other versions.
+    More information [here](http://chromedriver.chromium.org/getting-started)
 1. [Google Chrome](https://www.google.com/chrome/browser/desktop/) must be installed on your computer
 1. pip
 
@@ -25,6 +25,7 @@ Disclaimer: The secretly entered password is only used to pass it to selenium in
    * the webdriver will be added to the path
    * the virtualenv will be loaded
 1. the requirements should be installed `pip install -r requirements.txt`
+1. use easy_install to install pillow `easy_install Pillow==5.2.0`
 1. create `options.json` file from `options_template.json`. It will be ignored by git.
 1. to leave from the virtualenv type `deactivate`
 
